@@ -88,7 +88,7 @@ variable "ssh_public_key" {
 variable "vm_size" {
   description = "Taille de la machine virtuelle Azure"
   type        = string
-  default     = "Standard_B1s"
+  default     = "Standard_B2s"
 }
 
 # Interface réseau de la machine virtuelle
