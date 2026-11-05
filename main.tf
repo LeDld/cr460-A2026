@@ -30,11 +30,7 @@ resource "azurerm_resource_group" "cr460" {
   name     = "rg-cr460-devoir"
   location = var.location
 
-  tags = {
-    Projet        = "CR460"
-    Environnement = "Devoir"
-    Gestion       = "Terraform"
-  }
+  tags = local.tags_communs
 }
 
 output "resource_group_name" {
@@ -48,11 +44,7 @@ resource "azurerm_virtual_network" "cr460" {
   location            = azurerm_resource_group.cr460.location
   resource_group_name = azurerm_resource_group.cr460.name
 
-  tags = {
-    Projet        = "CR460"
-    Environnement = "Devoir"
-    Gestion       = "Terraform"
-  }
+  tags = local.tags_communs
 }
 
 # Étape 10 - Déploiement d'un conteneur Docker dans Azure
@@ -82,11 +74,7 @@ resource "azurerm_container_group" "cr460" {
     protocol = "TCP"
   }
 
-  tags = {
-    Projet        = "CR460"
-    Environnement = "Devoir"
-    Gestion       = "Terraform"
-  }
+  tags = local.tags_communs
 }
 
 output "container_ip" {
@@ -120,4 +108,35 @@ variable "vm_size" {
   description = "Taille de la machine virtuelle Azure"
   type        = string
   default     = "Standard_B2s"
+}
+
+# Étape 12 - Azure Key Vault
+
+data "azurerm_client_config" "current" {}
+
+resource "azurerm_key_vault" "cr460" {
+  name                       = "kv-cr460-lab-2026"
+  location                   = azurerm_resource_group.cr460.location
+  resource_group_name        = azurerm_resource_group.cr460.name
+  tenant_id                  = data.azurerm_client_config.current.tenant_id
+  sku_name                   = "standard"
+  enable_rbac_authorization  = true
+  soft_delete_retention_days = 7
+  purge_protection_enabled   = false
+
+  tags = local.tags_communs
+}
+
+output "key_vault_id" {
+  value = azurerm_key_vault.cr460.id
+}
+
+# Étape 13 - Tags de gestion des coûts
+locals {
+  tags_communs = {
+    Projet        = "DevoirCR460"
+    Environnement = "Devoir"
+    Gestion       = "Terraform"
+    CentreCout    = "Formation"
+  }
 }
